@@ -1,0 +1,9 @@
+Comandi per usare lex e yacc:
+
+   lex esempio4.l
+   yacc -d esempio4.y
+   cc lex.yy.c y.tab.c -o esempio4
+   // and then execute the executable file
+   
+NOTA: se si sta usando flex, invece che lex, è probabile sia necessario cambiare '-ll' in '-lfl' negli script di compilazione. In RedHat 6.x e SuSE è necessario questo cambiamento anche se si invoca 'flex' come 'lex'! 
+    
