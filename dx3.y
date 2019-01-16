@@ -13,8 +13,11 @@ void yyerror(char *msg);
 int yywrap();
 
 //Symbol table functions
-int lookup(char id[]); 
+int lookup(char id[]);
 int insert(char id[], int val);
+
+//Functional function maybe functioning
+float myPow(float number, int exponent);
 
 //Symbol table variables
 float table[10]; //values
@@ -38,7 +41,7 @@ int next = 0; //next free position
 %right '='
 %left 'p'
 %left '+' '-'
-%left '*' '/'
+%left '*' '/' '^'
 
 %%
 
@@ -58,6 +61,7 @@ EXP:
 	| EXP '-' EXP {$$ = $1 - $3;}
 	| EXP '*' EXP {$$ = $1 * $3;}
 	| EXP '/' EXP {$$ = $1 / $3;}
+	| EXP '^' EXP {$$ = myPow($1,$3);}
 	| '(' EXP ')' {$$ = $2;}
 	| ID '=' EXP {int res = lookup($1); if(res == -1 && next < MAX_VARIABLES) res = insert($1, $3); }
 	|NUMBER  {$$ = $1;}
@@ -104,3 +108,12 @@ int insert(char id[], int val){
 	return next-1; //and we return the one we just add
 		
 }
+
+float myPow(float p, int exponent){
+	int res = 1;
+	for(int i = 0; i < exponent; i++)
+		res *= p; 
+		
+	return res;
+}
+
