@@ -1,8 +1,15 @@
 Comandi per usare lex e yacc:
 
    lex dx3.l
-   yacc -d dx3.y
-   cc lex.yy.c y.tab.c -o dx3
+   yacc -d dx3.y (or bison -dy dx3.y)
+   gcc lex.yy.c y.tab.c -o dx3
    ./dx3 input.dx3
    
 Dove input.dx3 è il codice
+
+
+What now?
+-keyword meaning "undefined" needed
+-built-in math entities (sets, sequences)
+-imports? includes?
+-makefile
