@@ -19,7 +19,7 @@ int lookup(char id[]);
 int insert(char id[], float val);
 
 //Functional function maybe functioning
-extern float myPow(float p, int exponent);
+
 
 //Symbol table variables
 float table[10]; //values
@@ -60,7 +60,7 @@ OP: 	'p' EXP {printf("%f\n", $2);};
 
 
 EXP:    
-	 EXP '+' EXP {$$ = $1 + $3; }
+	 EXP '+' EXP {$$ = $1 + $3; printf("Addition detected\n");}
 	| EXP '-' EXP {$$ = $1 - $3;}
 	| EXP '*' EXP {$$ = $1 * $3;}
 	| EXP '/' EXP {$$ = $1 / $3;}
