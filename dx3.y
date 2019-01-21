@@ -7,6 +7,7 @@
 #include "functions.c"
 
 #define MAX_VARIABLES 10
+#define NOT_DEF "ND"
 
 //Default mandatory functions
 extern FILE *yyin;
@@ -17,9 +18,6 @@ int yywrap();
 //Symbol table functions
 int lookup(char id[]);
 int insert(char id[], float val);
-
-//Functional function maybe functioning
-extern float myPow(float p, int exponent);
 
 //Symbol table variables
 float table[10]; //values
@@ -44,7 +42,7 @@ int next = 0; //next free position
 %right '='
 %left 'p'
 %left '+' '-'
-%left '*' '/' '^' '%'
+%left '*' '/' '^' '%' '!'
 
 %%
 
@@ -66,6 +64,7 @@ EXP:
 	| EXP '/' EXP {$$ = $1 / $3;}
 	| EXP '^' EXP {$$ = myPow($1,$3);}
 	| EXP '%' EXP {$$ = (float)((int)$1 % (int)$3);}
+	| EXP '!' {$$ = $1 >= 0 ? fac($1) : -1;}
 	| '(' EXP ')' {$$ = $2;}
 	| ID '=' EXP {int res = lookup($1); if(res == -1 && next < MAX_VARIABLES) res = insert($1, $3); }
 	| NUMBER  {$$ = $1;}
