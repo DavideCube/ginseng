@@ -14,7 +14,7 @@
 "p"			{return yytext[0];}
 [a-zA-Z_][a-zA-Z0-9_]*  {strcpy(yylval.name,yytext); return ID;} //it is a string, we copy it in the value
 [-+*/().=;^]		{return yytext[0];}
-[\t\v\f]+		{;}/*ignore end of line*/
+[\t\v\f\n]+		{;}/*ignore end of line*/
 " "			{;}
 
 %%

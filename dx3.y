@@ -8,6 +8,7 @@
 #define MAX_VARIABLES 10
 
 //Default mandatory functions
+extern FILE *yyin;
 extern int yylex();
 void yyerror(char *msg);
 int yywrap();
@@ -79,7 +80,11 @@ int yywrap()
         return 1;
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+	FILE *fh;
+    	if (argc == 2 && (fh = fopen(argv[1], "r")))
+        	yyin = fh;
+	
 	yyparse();
 	return 0;
 	}	
