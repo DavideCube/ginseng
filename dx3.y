@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include<ctype.h>
 #include<string.h>
+#include "functions.h"
 
 #define MAX_VARIABLES 10
 
@@ -18,7 +19,7 @@ int lookup(char id[]);
 int insert(char id[], float val);
 
 //Functional function maybe functioning
-float myPow(float number, int exponent);
+extern float myPow(float p, int exponent);
 
 //Symbol table variables
 float table[10]; //values
@@ -26,6 +27,7 @@ char labels[10][10]; //labels
 int next = 0; //next free position
 
 %}
+
 
 %union{
 	float value;
@@ -114,11 +116,4 @@ int insert(char id[], float val){
 		
 }
 
-float myPow(float p, int exponent){
-	int res = 1;
-	for(int i = 0; i < exponent; i++)
-		res *= p; 
-		
-	return res;
-}
 
