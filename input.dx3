@@ -1,3 +1,3 @@
-id = 3*4;
-res = id + 3;
-p res.
+//we can use C style comments
+id = 3.2*1.4;
+p id.

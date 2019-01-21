@@ -15,7 +15,7 @@ int yywrap();
 
 //Symbol table functions
 int lookup(char id[]);
-int insert(char id[], int val);
+int insert(char id[], float val);
 
 //Functional function maybe functioning
 float myPow(float number, int exponent);
@@ -54,7 +54,7 @@ S: 	EXP
 	| OP ';' S;
 
 
-OP: 	'p' EXP {printf("Output: %f\n", $2);};
+OP: 	'p' EXP {printf("%f\n", $2);};
 
 
 EXP:    
@@ -102,7 +102,7 @@ int lookup(char id[]){
 
 //Insert to add a new value if the label of the variable is not present. 
 //Executed only if we still have space to store new variables.
-int insert(char id[], int val){
+int insert(char id[], float val){
 	
 	//We copy the label in the next free location
 	strcpy(labels[next], id);
