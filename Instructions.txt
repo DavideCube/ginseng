@@ -11,5 +11,7 @@ Dove input.dx3 è il codice
 What now?
 -keyword meaning "undefined" needed
 -built-in math entities (sets, sequences)
--imports? includes?
+-imports? includes? when sparring, dx3 should load the set of
+ core classes (#included as standard).But a developer should be
+ able to include its own dx3 files, and this is possible using built in yybuffer functions.
 -makefile
