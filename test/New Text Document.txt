@@ -1,0 +1,7 @@
+#include <stdio.h>
+
+
+int main(){
+	int size = sizeof(double);
+	printf("%d\n", size);
+}

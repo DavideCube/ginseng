@@ -5,6 +5,7 @@
 #include <ctype.h>
 #include <string.h>
 #include "libs/core/arithmetic.h"
+#include "libs/core/intro.h"
 #include "libs/data/LinkedList.h"
 
 #define NOT_DEF "ND"
@@ -15,6 +16,7 @@ extern int yylex();
 extern int yylineno;
 void yyerror(char *msg);
 int yywrap();
+
 
 //Symbol table variable
 Node *start = NULL;
@@ -33,6 +35,7 @@ Node *start = NULL;
 %token ID
 %token PRINT
 %token<strval> STRING
+%token GINSENG
 %type<value> NUMBER EXP
 %type<name> ID
 
@@ -54,10 +57,12 @@ S: 	EXP
 
 OP: 	PRINT PRINTABLE {printf("\n");};
 
+
 PRINTABLE:  EXP {printf("%f", $1);}
 	   | STRING {printf("%s", $1);}
 	   | PRINTABLE '_' EXP {printf("%f", $3);} 
 	   | PRINTABLE '_' STRING {printf("%s", $3);} ;
+	   | GINSENG {cup();}
 
 EXP:    
 	 EXP '+' EXP {$$ = $1 + $3; }
@@ -75,6 +80,7 @@ EXP:
 
 %%
 
+
 void yyerror(char *msg) {
 	fprintf(stderr, "Line %d - %s\n", yylineno, msg);
 	exit(1);
@@ -85,27 +91,6 @@ int yywrap()
         return 1;
 }
 
-void intro(){
-	printf("\n");
-	printf("	 )  (\n");
-	printf("     (   ) )\n");
-	printf("      ) ( (\n");
-	printf("    _______)_\n");
-	printf(" .-'---------|  \n");
-	printf("( C|/\\/\\/\\/\\/|\n");
-	printf(" '-./GINSENG/|\n");
-	printf("   |/\\/\\/\\/\\/|\n");
-	printf("   '_________'\n");
-	printf("    '-------'\n");
-	printf("\n");
-	printf("########################################################################\n");
-	printf("#                                                                      #\n");
-	printf("# Welcome to Ginseng, a very loud and energizing programming language! #\n");
-	printf("#                                                                      #\n");
-	printf("########################################################################\n\n");
-
-}
-
 int main(int argc, char* argv[]) {
 	
 	FILE *fh;
@@ -113,7 +98,6 @@ int main(int argc, char* argv[]) {
         	yyin = fh;
 	else{
 		intro();
-
 	}
 		
 	
