@@ -2,9 +2,9 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-#include<ctype.h>
-#include<string.h>
-#include "functions.c"
+#include <ctype.h>
+#include <string.h>
+#include "libs/core/arithmetic.h"
 
 #define MAX_VARIABLES 10
 #define NOT_DEF "ND"
@@ -83,6 +83,7 @@ int yywrap()
 }
 
 int main(int argc, char* argv[]) {
+	printf("<---Welcome to DX3 command-line!--->\n");
 	FILE *fh;
     	if (argc == 2 && (fh = fopen(argv[1], "r")))
         	yyin = fh;
