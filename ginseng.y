@@ -56,8 +56,8 @@ OP: 	PRINT PRINTABLE {printf("\n");};
 
 PRINTABLE:  EXP {printf("%f", $1);}
 	   | STRING {printf("%s", $1);}
-	   | PRINTABLE '_' EXP {printf("%f", $1);} 
-	   | PRINTABLE '_' STRING {printf("%s", $1);} ;
+	   | PRINTABLE '_' EXP {printf("%f", $3);} 
+	   | PRINTABLE '_' STRING {printf("%s", $3);} ;
 
 EXP:    
 	 EXP '+' EXP {$$ = $1 + $3; }
