@@ -12,6 +12,7 @@
 //Default mandatory functions
 extern FILE *yyin;
 extern int yylex();
+extern int yylineno;
 void yyerror(char *msg);
 int yywrap();
 
@@ -67,7 +68,7 @@ EXP:
 %%
 
 void yyerror(char *msg) {
-	fprintf(stderr, "%s\n", msg);
+	fprintf(stderr, "Line %d - %s\n", yylineno, msg);
 	exit(1);
 	}
 

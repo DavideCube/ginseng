@@ -8,7 +8,7 @@
 
 
 %option noyywrap
-
+%option yylineno
 %%
 
 (([1-9][0-9]*)|0)(\.[0-9]+)?           	{yylval.value=atof(yytext); return NUMBER;} //it is a number, we return the value
