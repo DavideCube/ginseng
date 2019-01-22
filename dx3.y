@@ -78,7 +78,7 @@ int yywrap()
 }
 
 int main(int argc, char* argv[]) {
-	printf("<---Welcome to DX3 command-line!--->\n");
+	printf(" Copyright 2019 by Davide Cube organization\nAll rights reserved. No part of this publication may be reproduced, distributed,\n or transmitted in any form or by any means, including photocopying,\n recording, or other electronic or mechanical methods, without the prior\n written permission of the publisher, except in the case of brief quotations\n embodied in critical reviews and certain other noncommercial uses\n permitted by copyright law. For permission requests, write to the organization.\n\n");
 	FILE *fh;
     	if (argc == 2 && (fh = fopen(argv[1], "r")))
         	yyin = fh;
