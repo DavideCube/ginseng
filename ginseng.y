@@ -37,8 +37,8 @@ Node *start = NULL;
 %type<name> ID
 
 
-%right '='
-%left 'p'
+%right '=' '_'
+%left "print"
 %left '+' '-'
 %left '*' '/' '^' '%' '!'
 
@@ -52,14 +52,12 @@ S: 	EXP
 	| OP ';' S;
 
 
-OP: 	PRINT EXP {printf("%f\n", $2);}
-	| PRINT STRING {printf("%s\n", $2);}
-	| PRINT STRING '+' EXP {printf("%s%f\n", $2, $4);};
+OP: 	PRINT PRINTABLE;
 
 PRINTABLE: EXP {printf("%f\n", $1);}
 	   | STRING {printf("%s\n", $1);}
-	   | EXP '+' A {printf("%f", $1);}
-	   | STRING '+' A {printf("%s", $1);};
+	   | EXP {printf("%f", $1);} '_' PRINTABLE 
+	   | STRING {printf("%s", $1);} '_' PRINTABLE ;
 
 EXP:    
 	 EXP '+' EXP {$$ = $1 + $3; }
