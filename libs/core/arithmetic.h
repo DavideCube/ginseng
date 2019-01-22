@@ -1,3 +1,3 @@
-float myPow(float base, int exp);
-float mod(float a, float b);
-float fac(float x);
+double _pow(double base, int exp);
+double _mod(double a, double b);
+double _fac(double x);

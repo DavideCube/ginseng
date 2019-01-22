@@ -3,7 +3,7 @@
 * Power function implemented with exp by squaring (shift in binaries).
 * Runs in log2(n), where n is the exponent.
 */
-float myPow(float base, int exp){
+double _pow(double base, int exp){
 	int res = 1;
 	for (;;){
 
@@ -19,8 +19,8 @@ float myPow(float base, int exp){
 }
 
 
-float fac(float x){
-    float res = x;
+double _fac(double x){
+    double res = x;
     
     for(int i = x-1; i > 0; i--){
         res *= i;

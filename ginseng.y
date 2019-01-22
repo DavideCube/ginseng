@@ -64,9 +64,9 @@ EXP:
 	| EXP '-' EXP {$$ = $1 - $3;}
 	| EXP '*' EXP {$$ = $1 * $3;}
 	| EXP '/' EXP {$$ = $1 / $3;}
-	| EXP '^' EXP {$$ = myPow($1,$3);}
+	| EXP '^' EXP {$$ = _pow($1,$3);}
 	| EXP '%' EXP {$$ = (double)((int)$1 % (int)$3);}
-	| EXP '!' {$$ = $1 >= 0 ? fac($1) : -1;}
+	| EXP '!' {$$ = $1 >= 0 ? _fac($1) : -1;}
 	| '(' EXP ')' {$$ = $2;}
 	| ID '=' EXP {define(&start, $1, $3);}
 	| NUMBER  {$$ = $1;}
