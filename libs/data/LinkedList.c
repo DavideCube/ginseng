@@ -5,7 +5,7 @@
 #include "LinkedList.h"
 
 //We add a node in the head position of the list beginning with start
-void add(Node **start, char lab[], float val){
+void add(Node **start, char lab[], double val){
 	
 		Node *newNode;
 		newNode = malloc(sizeof(Node));
@@ -32,7 +32,7 @@ Node* find(Node *start, char lab[]){
 
 //We would like to define a variable. If it is already present we modify it, 
 //otherwise we add it
-void define(Node **start, char lab[], float val){
+void define(Node **start, char lab[], double val){
 	
 	Node *res = find( (*start), lab);
 	
