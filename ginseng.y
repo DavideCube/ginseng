@@ -85,13 +85,37 @@ int yywrap()
         return 1;
 }
 
+void intro(){
+	printf("\n");
+	printf("	 )  (\n");
+	printf("     (   ) )\n");
+	printf("      ) ( (\n");
+	printf("    _______)_\n");
+	printf(" .-'---------|  \n");
+	printf("( C|/\\/\\/\\/\\/|\n");
+	printf(" '-./GINSENG/|\n");
+	printf("   |/\\/\\/\\/\\/|\n");
+	printf("   '_________'\n");
+	printf("    '-------'\n");
+	printf("\n");
+	printf("########################################################################\n");
+	printf("#                                                                      #\n");
+	printf("# Welcome to Ginseng, a very loud and energizing programming language! #\n");
+	printf("#                                                                      #\n");
+	printf("########################################################################\n\n");
+
+}
+
 int main(int argc, char* argv[]) {
 	
 	FILE *fh;
     	if (argc == 2 && (fh = fopen(argv[1], "r")))
         	yyin = fh;
-	else
-		printf(" Copyright 2019 by Davide Cube organization\nAll rights reserved. No part of this publication may be reproduced, distributed,\n or transmitted in any form or by any means, including photocopying,\n recording, or other electronic or mechanical methods, without the prior\n written permission of the publisher, except in the case of brief quotations\n embodied in critical reviews and certain other noncommercial uses\n permitted by copyright law. For permission requests, write to the organization.\n\n");
+	else{
+		intro();
+
+	}
+		
 	
 	yyparse();
 	return 0;
