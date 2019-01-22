@@ -1,0 +1,34 @@
+%{
+#include <stdio.h>
+#include "y.tab.h"
+
+char* stringResize(char* text);
+%}
+
+
+
+%option noyywrap
+%option yylineno
+%%
+
+(([1-9][0-9]*)|0)(\.[0-9]+)?           	{yylval.value=atof(yytext); return NUMBER;} //it is a number, we return the value
+"print"			{ return PRINT;}
+[a-zA-Z_][a-zA-Z0-9_]*  {strcpy(yylval.name,yytext); return ID;} //it is a string, we copy it in the value
+\".*\"	{yylval.strval = stringResize(yytext); return STRING;}
+[-+*/().%!=;^]		{return yytext[0];}
+[\t\v\f\n]+		{;}/*ignore end of line*/
+" "			{;}
+"//".*			{;} //ignore comments in C style
+
+%%
+
+
+char* stringResize(char* text){
+	char* res = (char*)malloc( sizeof(char) * strlen(text) - 2 ); 
+	
+	for(int i = 1; i < strlen(text)-1; i++){
+		res[i-1] = text[i];
+	}
+	
+	return res;
+}
