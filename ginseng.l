@@ -18,8 +18,8 @@ char* stringResize(char* text);
 \"[^\"]*\"	{yylval.strval = stringResize(yytext); return STRING;}
 [-+*/()\.%!=;^_\[\],]		{return yytext[0];}
 \<[a-zA-Z][a-zA-Z0-9_]*\> {yylval.strval = strdup(yytext); return ARRID;}
-[\t\v\f\n]+		{;}/*ignore end of line*/
-" "			{;}
+[\t\v\f\n]+		{;}/*ignore special characters*/
+" "			{;} //ignore spaces
 "//".*			{;} //ignore comments in C style
 
 %%

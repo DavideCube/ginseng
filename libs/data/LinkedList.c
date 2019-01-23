@@ -56,7 +56,8 @@ void print_List(Node *start){
 	}
 }
 
-void print_array(char lab[], Node *start){
+Node* findArray(Node* start, char lab[]){
+
 	Node *arr = NULL;
 	while(start != NULL){
 		if( strcmp(start->label, lab) == 0){
@@ -65,6 +66,15 @@ void print_array(char lab[], Node *start){
 		}
 		start = start->next;
 	}
+
+	return arr;
+}
+
+
+void print_array(char lab[], Node *start){
+	
+	Node *arr = findArray(start, lab);
+
 	
 	if(arr == NULL){
 		yyerror("Syntax error: array does not exist");
@@ -79,4 +89,28 @@ void print_array(char lab[], Node *start){
 		}
 		printf("]\n");
 	}	
+}
+
+
+double returnArrayItem(Node *start, char lab[], int index){
+	
+	Node *arr = findArray(start, lab);
+
+	if(arr == NULL){
+		yyerror("Syntax error: array does not exist");
+	} else{
+		int current = 0;
+		while(arr != NULL){
+
+			if(current == index)
+				return arr->value;
+
+			arr = arr->next;
+			current++;
+		}
+
+		yyerror("Syntax error: array index out of cup");
+
+		return 0.0;
+	}
 }

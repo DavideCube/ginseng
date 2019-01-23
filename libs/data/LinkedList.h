@@ -11,3 +11,4 @@ void print_List(Node *start);
 Node* find(Node *start, char lab[]);
 void define(Node **start, char lab[], double val, Node *arr);
 void print_array(char lab[], Node *start);
+double returnArrayItem(Node *start, char lab[], int index);
