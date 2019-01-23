@@ -1,6 +1,9 @@
 #include "hashtable.h"
 #define DEBUG
-#define CONFLICT_CHECK
+#define CONFLICT_CHECK //TODO
+//TODO: implement some kind of error code recognition, in case out of memory or similar.
+//Also check well for boundaries and sizes when malloc-ing initially. Could it be
+//More dynamic?
 
 
 table_t* ht_create(int size){
@@ -37,7 +40,7 @@ table_t* ht_create(int size){
 int ht_hash(table_t* hashtable, char* key){
 
 	if(hashtable == NULL)
-		return -INT_MAX;
+		return INT_MIN;
 
 	unsigned long int hashval;
 	int i = 0;
@@ -92,7 +95,7 @@ entry_t* ht_pair(char* key, double value){
 int ht_put(table_t* hashtable, char* key, double value){
 
 	if(hashtable == NULL)
-		return -INT_MAX;
+		return INT_MIN;
 
 	int bucket = ht_hash(hashtable, key);
 
@@ -113,7 +116,7 @@ int ht_put(table_t* hashtable, char* key, double value){
 		* free(next_pair->value);
 		* next_pair->value = strdup(value);
 		*/
-		return -INT_MAX;
+		return INT_MIN;
 	}
 	else{
 
@@ -148,7 +151,7 @@ int ht_put(table_t* hashtable, char* key, double value){
 double ht_get(table_t* hashtable, char* key){
 
 	if(hashtable == NULL)
-		return -DBL_MAX;//could be a good idea to limit type size in ginseng, and set this variable to min value possible
+		return DBL_MIN;//could be a good idea to limit type size in ginseng, and set this variable to min value possible
 
 	//find the bucket in which our value will be
 	int bucket = ht_hash(hashtable, key);
@@ -162,7 +165,7 @@ double ht_get(table_t* hashtable, char* key){
 		#ifdef DEBUG
 		printf("No element with key %s found.\n", key);
 		#endif
-		return -DBL_MAX; //will change with some kind of error code control
+		return DBL_MIN; //will change with some kind of error code control
 	}
 	else{
 		#ifdef DEBUG
