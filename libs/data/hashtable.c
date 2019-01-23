@@ -1,8 +1,12 @@
 #include "hashtable.h"
 #define DEBUG
+#define CONFLICT_CHECK
 
 
 table_t* ht_create(int size){
+
+	if(size <= 0)
+		return NULL;
 
 	table_t* hashtable = malloc(sizeof(table_t));
 	if(hashtable == NULL){
@@ -32,12 +36,15 @@ table_t* ht_create(int size){
 
 int ht_hash(table_t* hashtable, char* key){
 
+	if(hashtable == NULL)
+		return -INT_MAX;
+
 	unsigned long int hashval;
 	int i = 0;
 	/* Convert our string to an integer */
 	while(hashval < ULONG_MAX && i < strlen( key ) ) {
 		hashval = hashval << 8;
-		hashval += key[ i ];
+		hashval += key[i];
 		i++;
 	}
 
@@ -84,6 +91,9 @@ entry_t* ht_pair(char* key, double value){
 
 int ht_put(table_t* hashtable, char* key, double value){
 
+	if(hashtable == NULL)
+		return -INT_MAX;
+
 	int bucket = ht_hash(hashtable, key);
 
 	entry_t* next_pair = hashtable->table[bucket];
@@ -96,14 +106,14 @@ int ht_put(table_t* hashtable, char* key, double value){
 
 	if(next_pair != NULL && next_pair->key != NULL && strcmp(key, next_pair->key) == 0){
 		//already present, skip?
-		printf("Already in here!\n");
+		printf("Already present!\n");
 
 		/**
 		* Code to replace value if key is already present
 		* free(next_pair->value);
 		* next_pair->value = strdup(value);
 		*/
-		return -1;
+		return -INT_MAX;
 	}
 	else{
 
@@ -129,15 +139,16 @@ int ht_put(table_t* hashtable, char* key, double value){
 
 
 	}
-	#ifdef DEBUG
-		printf("New pair inserted!.\n");
-	#endif
 
+	return OK;
 }
 
 
 
 double ht_get(table_t* hashtable, char* key){
+
+	if(hashtable == NULL)
+		return -DBL_MAX;//could be a good idea to limit type size in ginseng, and set this variable to min value possible
 
 	//find the bucket in which our value will be
 	int bucket = ht_hash(hashtable, key);
@@ -149,9 +160,9 @@ double ht_get(table_t* hashtable, char* key){
 	}
 	if(pair == NULL || pair->key == NULL || strcmp(key, pair->key) != 0){
 		#ifdef DEBUG
-		printf("No element with key %s found!\n", key);
+		printf("No element with key %s found.\n", key);
 		#endif
-		return -1; //will change with some kind of error code control
+		return -DBL_MAX; //will change with some kind of error code control
 	}
 	else{
 		#ifdef DEBUG
