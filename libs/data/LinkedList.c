@@ -5,12 +5,13 @@
 #include "LinkedList.h"
 
 //We add a node in the head position of the list beginning with start
-void add(Node **start, char lab[], double val){
+void add(Node **start, char lab[], double val, Node *arr){
 	
 		Node *newNode;
 		newNode = malloc(sizeof(Node));
 	
 		newNode->value = val;
+		newNode->array = arr;
 		strcpy(newNode->label,lab);
 		newNode->next = (*start);
 	
@@ -32,15 +33,16 @@ Node* find(Node *start, char lab[]){
 
 //We would like to define a variable. If it is already present we modify it, 
 //otherwise we add it
-void define(Node **start, char lab[], double val){
+void define(Node **start, char lab[], double val, Node *arr){
 	
 	Node *res = find( (*start), lab);
 	
 	if(  res != NULL){ // if exists, change it
-		printf("Found with value %f\n", res->value);
+		//printf("Found with value %f\n", res->value);
 		res->value = val;
+		res->array = arr;
 	 }else
-		add(start, lab, val); //else add it*/
+		add(start, lab, val, arr); //else add it*/
 }
 
 
@@ -52,4 +54,29 @@ void print_List(Node *start){
 		printf("Current value: %f\n", start->value);
 		start = start->next;
 	}
+}
+
+void print_array(char lab[], Node *start){
+	Node *arr = NULL;
+	while(start != NULL){
+		if( strcmp(start->label, lab) == 0){
+			arr = start->array;
+			break;
+		}
+		start = start->next;
+	}
+	
+	if(arr == NULL){
+		yyerror("Syntax error: array does not exist");
+	} else{
+		printf("[");
+		int first = 1;
+		while(arr != NULL){
+			printf(first? "" : " , ");
+			printf("%.2f", arr->value);
+			arr = arr->next;
+			first = 0;
+		}
+		printf("]\n");
+	}	
 }

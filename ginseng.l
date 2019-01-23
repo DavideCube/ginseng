@@ -16,7 +16,8 @@ char* stringResize(char* text);
 "ginseng"		{return GINSENG;}
 [a-zA-Z][a-zA-Z0-9_]*  {strcpy(yylval.name,yytext); return ID;} //it is a string, we copy it in the value
 \"[^\"]*\"	{yylval.strval = stringResize(yytext); return STRING;}
-[-+*/()\.%!=;^_]		{return yytext[0];}
+[-+*/()\.%!=;^_\[\],]		{return yytext[0];}
+\<[a-zA-Z][a-zA-Z0-9_]*\> {yylval.strval = strdup(yytext); return ARRID;}
 [\t\v\f\n]+		{;}/*ignore end of line*/
 " "			{;}
 "//".*			{;} //ignore comments in C style
