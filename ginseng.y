@@ -18,7 +18,7 @@ void yyerror(char *msg);
 int yywrap();
 
 
-//Symbol table variable
+//Symbol table variable (cremo is now a contributor yeee)
 Node *start = NULL;
 Node *arrTemp = NULL;
 int indexArr = 0;
