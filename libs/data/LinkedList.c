@@ -42,10 +42,35 @@ void define(Node **start, char lab[], double val, Node *arr){
 		res->value = val;
 		res->array = arr;
 	 }else
-		add(start, lab, val, arr); //else add it*/
+		append(start, lab, val, arr); //else add it*/
 }
 
+//similar to add but addition is made at the end of the list
+void append(Node **start, char lab[], double val, Node *arr){
 
+	if((*start) == NULL){
+		add(start, lab, val, arr);
+		return;
+	}
+
+	Node *curr = (*start);
+
+	while( curr->next !=  NULL){
+		curr = curr->next;
+	}
+
+		Node *newNode;
+		newNode = malloc(sizeof(Node));
+	
+		newNode->value = val;
+		newNode->array = arr;
+		strcpy(newNode->label,lab);
+
+		
+		curr->next = newNode;
+
+
+}
 
 //support method to print entire list
 void print_List(Node *start){
@@ -56,24 +81,28 @@ void print_List(Node *start){
 	}
 }
 
-Node* findArray(Node* start, char lab[]){
+//Return a reference (double pointer for new memory allocation) of the given array, if present,
+//otherwise NULL
+Node ** findReferenceToArray(Node **start, char lab[]){
 
-	Node *arr = NULL;
-	while(start != NULL){
-		if( strcmp(start->label, lab) == 0){
-			arr = start->array;
+	Node **arr = NULL;
+	while( (*start) != NULL){
+		
+		if( strcmp((*start)->label, lab) == 0 && (*start)->array != NULL){
+			arr =  &((*start)->array);
 			break;
 		}
-		start = start->next;
+		(*start) = (*start)->next;
 	}
 
 	return arr;
 }
 
-
-void print_array(char lab[], Node *start){
+//Print the whole array in the decided format
+void print_array(char lab[], Node **start){ 
 	
-	Node *arr = findArray(start, lab);
+	Node **mod = findReferenceToArray(start, lab);
+	Node *arr = (*mod);
 
 	
 	if(arr == NULL){
@@ -91,10 +120,11 @@ void print_array(char lab[], Node *start){
 	}	
 }
 
-
-double returnArrayItem(Node *start, char lab[], int index){
+//Return the array item identified by the given index, if it does not exist throw an error
+double returnArrayItem(Node **start, char lab[], int index){
 	
-	Node *arr = findArray(start, lab);
+	Node **mod = findReferenceToArray(start, lab);
+	Node *arr = (*mod);
 
 	if(arr == NULL){
 		yyerror("Syntax error: array does not exist");
@@ -112,5 +142,48 @@ double returnArrayItem(Node *start, char lab[], int index){
 		yyerror("Syntax error: array index out of cup");
 
 		return 0.0;
+	}
+}
+
+//Set the array item identified by the given index. 
+//if the index is greater than the length of the array, we initialize the element in between to 0
+void setArrayItem(Node **start, char lab[], int index, double value){
+	
+	
+	Node **mod = findReferenceToArray(start, lab);
+	Node *arr = (*mod);
+
+	if(arr == NULL){
+		yyerror("Syntax error: array does not exist");
+	} else{
+
+		if(index < 0)
+			yyerror("Syntax error: array index cannot be negative");
+
+		int current = 0; 
+		//If the index is already in use
+		while(arr != NULL){
+
+			if(current == index){
+				arr->value = value;
+				return;
+			}
+			arr = arr->next;
+			current++;
+		}
+		
+	//If it does not exist, let's initialize with 0.0 all the one 
+	//in between and then set the desired one
+	char tempLab[12];
+
+	while(current < index){
+		sprintf(tempLab, "%d", current); 
+		append(mod, tempLab, 0.0, NULL);
+		current++;
+		
+	}
+	sprintf(tempLab, "%d", current);
+	append(mod, tempLab, value, NULL);
+
 	}
 }
