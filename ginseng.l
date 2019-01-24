@@ -14,6 +14,7 @@ char* stringResize(char* text);
 (([1-9][0-9]*)|0)(\.[0-9]+)?           	{yylval.value=atof(yytext); return NUMBER;} //it is a number, we return the value
 "print"			{ return PRINT;}
 "ginseng"		{return GINSENG;}
+"length"		{return LENGTH;}
 [a-zA-Z][a-zA-Z0-9_]*  {strcpy(yylval.name,yytext); return ID;} //it is a string, we copy it in the value
 \"[^\"]*\"	{yylval.strval = stringResize(yytext); return STRING;}
 [-+*/()\.%!=;^_\[\],]		{return yytext[0];}

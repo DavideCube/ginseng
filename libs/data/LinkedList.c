@@ -187,3 +187,17 @@ void setArrayItem(Node **start, char lab[], int index, double value){
 
 	}
 }
+
+double arrayLength (Node **start, char lab[]){
+	
+	Node **mod = findReferenceToArray(start, lab);
+	Node *arr = (*mod);
+
+	int length = 0;
+	while(arr != NULL){
+		length++;
+		arr = arr->next;
+	}
+
+	return (double)length;
+}

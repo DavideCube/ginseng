@@ -35,7 +35,7 @@ char tempLab[12];
 
 %token NUMBER
 %token ID
-%token PRINT
+%token PRINT LENGTH
 %token<strval> STRING ARRID
 %token GINSENG
 %type<value> NUMBER EXP
@@ -58,7 +58,6 @@ S: 	ASSIGNMENT
 
 
 OP: 	PRINT PRINTABLE {printf("\n");};
-
 
 PRINTABLE:  EXP {printf("%f", $1);}
 	   | STRING {printf("%s", $1);}
@@ -83,7 +82,8 @@ EXP:
 	| '(' EXP ')' {$$ = $2;}
 	| NUMBER  {$$ = $1;}
 	| '-' NUMBER {$$ = -$2;}
-	|ARRID '[' EXP ']'{$$ = returnArrayItem( &start, $1, (int) $3); };
+	|ARRID '[' EXP ']'{$$ = returnArrayItem( &start, $1, (int) $3); }
+	| LENGTH '(' ARRID ')' {$$ = arrayLength(&start, $3);}
 	| ID {Node *res = find(start, $1); if (res != NULL && res->array == NULL) $$ = res->value; else yyerror("Syntax error: use of an undeclared/wrong type variable");};
 
 ARRAY: '[' ELEM ']';
