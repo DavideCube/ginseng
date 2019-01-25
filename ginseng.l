@@ -15,9 +15,18 @@ char* stringResize(char* text);
 "print"			{ return PRINT;}
 "ginseng"		{return GINSENG;}
 "length"		{return LENGTH;}
+"if"			{return IF;}
+"then"			{return THEN;}
+"else"			{return ELSE;}
+"=="			{return EQUAL;}
+"<="			{return LESSEQUAL;}
+"<"			{return LESS;}
+">="			{return GREATEREQUAL;}
+">"			{return GREATER;}
+
 [a-zA-Z][a-zA-Z0-9_]*  {strcpy(yylval.name,yytext); return ID;} //it is a string, we copy it in the value
 \"[^\"]*\"	{yylval.strval = stringResize(yytext); return STRING;}
-[-+*/()\.%!=;^_\[\],]		{return yytext[0];}
+[-+*/()\.%!=;^_\[\],\{\}]		{return yytext[0];}
 \<[a-zA-Z][a-zA-Z0-9_]*\> {yylval.strval = strdup(yytext); return ARRID;}
 [\t\v\f\n]+		{;}/*ignore special characters*/
 " "			{;} //ignore spaces

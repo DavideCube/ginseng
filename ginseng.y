@@ -23,6 +23,9 @@ Node *start = NULL;
 Node *arrTemp = NULL;
 int indexArr = 0;
 char tempLab[12];
+
+//Flow of control variables
+int execute = 1;
 %}
 
 
@@ -30,12 +33,14 @@ char tempLab[12];
 	double value;
 	char name[20];
 	char *strval;
+	
 }
 	
 
 %token NUMBER
 %token ID
-%token PRINT LENGTH
+%token PRINT LENGTH IF THEN ELSE STATLIST
+%token EQUAL LESS GREATER LESSEQUAL GREATEREQUAL
 %token<strval> STRING ARRID
 %token GINSENG
 %type<value> NUMBER EXP
@@ -51,26 +56,28 @@ char tempLab[12];
 
 P: S '.' {return 0;};
 
-S: 	ASSIGNMENT
+S: 	|ASSIGNMENT
 	|OP
+	|IFSTAT
 	| ASSIGNMENT ';' S
-	| OP ';' S;
+	| OP ';' S
+	| IFSTAT ';' S;
 
 
-OP: 	PRINT PRINTABLE {printf("\n");};
+OP: 	PRINT PRINTABLE {if(execute) printf("\n");};
 
-PRINTABLE:  EXP {printf("%f", $1);}
-	   | STRING {printf("%s", $1);}
-	   | ARRID {print_array($1, &start);}
-	   | PRINTABLE '_' EXP {printf("%f", $3);} 
-	   | PRINTABLE '_' STRING {printf("%s", $3);}
-	   | PRINTABLE '_' ARRID {print_array($3, &start);}
+PRINTABLE:  EXP { if(execute) printf("%f", $1);}
+	   | STRING { if(execute) printf("%s", $1);}
+	   | ARRID { if(execute) print_array($1, &start);}
+	   | PRINTABLE '_' EXP {if(execute) printf("%f", $3);} 
+	   | PRINTABLE '_' STRING {if(execute) printf("%s", $3);}
+	   | PRINTABLE '_' ARRID {if(execute) print_array($3, &start);}
 	   | GINSENG {cup();};
 
 ASSIGNMENT: 
-	ID '=' EXP {define(&start, $1, $3, NULL);}
-	|ARRID '=' ARRAY {define(&start, $1, 0.0, arrTemp); arrTemp = NULL;}
-	|ARRID '[' EXP ']' '=' EXP {setArrayItem(&start, $1, $3, $6);};
+	ID '=' EXP {if(execute) define(&start, $1, $3, NULL);}
+	|ARRID '=' ARRAY {if(execute) {define(&start, $1, 0.0, arrTemp); arrTemp = NULL;} }
+	|ARRID '[' EXP ']' '=' EXP {if(execute) setArrayItem(&start, $1, $3, $6);};
 EXP:    
 	 EXP '+' EXP {$$ = $1 + $3; }
 	| EXP '-' EXP {$$ = $1 - $3;}
@@ -93,6 +100,15 @@ ELEM :  ID {sprintf(tempLab, "%d", indexArr); Node *res = find(start, $1); if (r
 	| ID {sprintf(tempLab, "%d", indexArr); Node *res = find(start, $1); if (res != NULL && res->array == NULL){ define(&arrTemp,tempLab, res->value, NULL); indexArr++; }  else yyerror("Syntax error: use of an undeclared/wrong type variable");} ',' ELEM 
 	| NUMBER {sprintf(tempLab, "%d", indexArr); define(&arrTemp,tempLab, $1, NULL); indexArr++;} ',' ELEM ;
 
+
+IFSTAT: IF CONDITION THEN '{' S '}' {execute = 1;};
+
+
+CONDITION: EXP EQUAL EXP {execute = ($1 == $3? 1:0);}
+		   |EXP LESSEQUAL EXP {execute = ($1 <= $3? 1:0);}
+		   |EXP GREATEREQUAL EXP {execute = ($1 >= $3? 1:0);}
+		   |EXP LESS EXP {execute = ($1 < $3? 1:0);}
+		   |EXP GREATER EXP {execute = ($1 > $3? 1:0);};
 %%
 
 void yyerror(char *msg) {
