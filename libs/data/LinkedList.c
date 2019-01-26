@@ -19,6 +19,21 @@ void add(Node **start, char lab[], double val, Node *arr){
 	
 }
 
+void addIf(Node **start, char lab[], double val, double val2, Node *arr){
+	
+		Node *newNode;
+		newNode = malloc(sizeof(Node));
+	
+		newNode->value = val;
+		newNode->restore = val2;
+		newNode->array = arr;
+		strcpy(newNode->label,lab);
+		newNode->next = (*start);
+	
+		(*start) = newNode;
+	
+}
+
 Node* find(Node *start, char lab[]){
 	
 	while(start != NULL){
@@ -79,6 +94,8 @@ void print_List(Node *start){
 		printf("Current value: %f\n", start->value);
 		start = start->next;
 	}
+
+	printf("\n");
 }
 
 //Return a reference (double pointer for new memory allocation) of the given array, if present,
@@ -200,4 +217,21 @@ double arrayLength (Node **start, char lab[]){
 	}
 
 	return (double)length;
+}
+
+void pop(Node **start){
+	
+
+	if( (*start) == NULL){
+		yyerror("Cannot pop head element, list is empty");
+		return;
+	}
+
+	Node *head = (*start);
+
+	(*start) = ((*start)->next);
+
+	free(head);
+	//printf("Next start val: %f\n",(*start)->value); 
+	
 }

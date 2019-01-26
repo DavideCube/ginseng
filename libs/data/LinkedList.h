@@ -4,9 +4,13 @@ typedef struct Node {
     char label[20]; //Label of the current node
     //pointer to next element of the linked list
     struct Node* next;
+    
+    double restore;
+
 } Node;
 
 void add(Node **start, char lab[], double val, Node *arr);
+void addIf(Node **start, char lab[], double val, double val2, Node *arr);
 void append(Node **start, char lab[], double val, Node *arr);
 void print_List(Node *start);
 Node* find(Node *start, char lab[]);
@@ -15,3 +19,4 @@ void print_array(char lab[], Node **start);
 double returnArrayItem(Node **start, char lab[], int index);
 void setArrayItem(Node **start, char lab[], int index, double value);
 double arrayLength (Node **start, char lab[]);
+void pop(Node **start);

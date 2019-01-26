@@ -21,11 +21,17 @@ int yywrap();
 //Symbol table variable (cremo is now a contributor yeee)
 Node *start = NULL;
 Node *arrTemp = NULL;
+Node *ifTable = NULL;
 int indexArr = 0;
 char tempLab[12];
 
 //Flow of control variables
 int execute = 1;
+int restore;
+int elseVal = 0;
+
+int ifCount = 0;
+double exec;
 %}
 
 
@@ -58,10 +64,9 @@ P: S '.' {return 0;};
 
 S: 	|ASSIGNMENT
 	|OP
-	|IFSTAT
 	| ASSIGNMENT ';' S
 	| OP ';' S
-	| IFSTAT ';' S;
+	| IFSTAT S;
 
 
 OP: 	PRINT PRINTABLE {if(execute) printf("\n");};
@@ -72,7 +77,7 @@ PRINTABLE:  EXP { if(execute) printf("%f", $1);}
 	   | PRINTABLE '_' EXP {if(execute) printf("%f", $3);} 
 	   | PRINTABLE '_' STRING {if(execute) printf("%s", $3);}
 	   | PRINTABLE '_' ARRID {if(execute) print_array($3, &start);}
-	   | GINSENG {cup();};
+	   | GINSENG {if(execute) cup();};
 
 ASSIGNMENT: 
 	ID '=' EXP {if(execute) define(&start, $1, $3, NULL);}
@@ -101,14 +106,15 @@ ELEM :  ID {sprintf(tempLab, "%d", indexArr); Node *res = find(start, $1); if (r
 	| NUMBER {sprintf(tempLab, "%d", indexArr); define(&arrTemp,tempLab, $1, NULL); indexArr++;} ',' ELEM ;
 
 
-IFSTAT: IF CONDITION THEN '{' S '}' {execute = 1;};
+IFSTAT: IF CONDITION THEN '{' S '}' { execute = ifTable->restore; pop(&ifTable); ifCount--;}
+		|IF CONDITION THEN '{' S '}' {execute = (int) ifTable->value; printf("Else exec: %d\n", execute); }  ELSE '{' S '}' {execute = ifTable->restore; pop(&ifTable); ifCount--;};
 
 
-CONDITION: EXP EQUAL EXP {execute = ($1 == $3? 1:0);}
-		   |EXP LESSEQUAL EXP {execute = ($1 <= $3? 1:0);}
-		   |EXP GREATEREQUAL EXP {execute = ($1 >= $3? 1:0);}
-		   |EXP LESS EXP {execute = ($1 < $3? 1:0);}
-		   |EXP GREATER EXP {execute = ($1 > $3? 1:0);};
+CONDITION: EXP EQUAL EXP { restore = execute; if (execute) {execute = ($1 == $3? 1:0); elseVal = (execute==1? 0:1); } else{elseVal = 0;} ifCount++; sprintf(tempLab, "%d", ifCount); addIf(&ifTable, tempLab, elseVal, restore, NULL); }
+		   |EXP LESSEQUAL EXP {restore = execute; if (execute) {execute = ($1 <= $3? 1:0); elseVal = (execute==1? 0:1); } else{elseVal = 0;} ifCount++; sprintf(tempLab, "%d", ifCount); addIf(&ifTable, tempLab, elseVal, restore, NULL);}
+		   |EXP GREATEREQUAL EXP {restore = execute; if (execute) {execute = ($1 >= $3? 1:0); elseVal = (execute==1? 0:1); } else{elseVal = 0;} ifCount++; sprintf(tempLab, "%d", ifCount); addIf(&ifTable, tempLab, elseVal, restore, NULL);}
+		   |EXP LESS EXP {restore = execute; if (execute) {execute = ($1 < $3? 1:0); elseVal = (execute==1? 0:1); } else{elseVal = 0;} ifCount++; sprintf(tempLab, "%d", ifCount); addIf(&ifTable, tempLab, elseVal, restore, NULL);}
+		   |EXP GREATER EXP {restore = execute; if (execute) {execute = ($1 > $3? 1:0); elseVal = (execute==1? 0:1); } else{elseVal = 0;} ifCount++; sprintf(tempLab, "%d", ifCount); addIf(&ifTable, tempLab, elseVal, restore, NULL);};
 %%
 
 void yyerror(char *msg) {
