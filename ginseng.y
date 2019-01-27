@@ -107,7 +107,7 @@ ELEM :  ID {sprintf(tempLab, "%d", indexArr); Node *res = find(start, $1); if (r
 
 
 IFSTAT: IF CONDITION THEN '{' S '}' { execute = ifTable->restore; pop(&ifTable); ifCount--;}
-		|IF CONDITION THEN '{' S '}' {execute = (int) ifTable->value; printf("Else exec: %d\n", execute); }  ELSE '{' S '}' {execute = ifTable->restore; pop(&ifTable); ifCount--;};
+		|IF CONDITION THEN '{' S '}' {execute = (int) ifTable->value; }  ELSE '{' S '}' {execute = ifTable->restore; pop(&ifTable); ifCount--;};
 
 
 CONDITION: EXP EQUAL EXP { restore = execute; if (execute) {execute = ($1 == $3? 1:0); elseVal = (execute==1? 0:1); } else{elseVal = 0;} ifCount++; sprintf(tempLab, "%d", ifCount); addIf(&ifTable, tempLab, elseVal, restore, NULL); }
