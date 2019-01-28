@@ -1,6 +1,6 @@
 ####COMPILER RELATED####
 CC=gcc
-#CFLAGS=-Wall -Wextra
+CFLAGS=-Wall -Wextra
 #######################
 ######FILENAMES########
 OBJ_F=ginseng 

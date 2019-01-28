@@ -8,7 +8,6 @@
 #include "libs/core/intro.h"
 #include "libs/data/LinkedList.h"
 
-#define NOT_DEF "ND"
 
 //Default mandatory functions
 extern FILE *yyin;
