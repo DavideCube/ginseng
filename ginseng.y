@@ -7,6 +7,7 @@
 #include "libs/core/arithmetic.h"
 #include "libs/core/intro.h"
 #include "libs/data/LinkedList.h"
+#include "libs/data/set.h"
 
 
 //Default mandatory functions
@@ -20,6 +21,7 @@ int yywrap();
 //Symbol table variable (cremo is now a contributor yeee)
 Node *start = NULL;
 Node *arrTemp = NULL;
+struct set_t* setTemp = NULL;
 Node *ifTable = NULL;
 int indexArr = 0;
 char tempLab[12];
@@ -46,7 +48,7 @@ double exec;
 %token ID
 %token PRINT LENGTH IF THEN ELSE STATLIST
 %token EQUAL LESS GREATER LESSEQUAL GREATEREQUAL
-%token<strval> STRING ARRID
+%token<strval> STRING ARRID SET
 %token GINSENG
 %type<value> NUMBER EXP
 %type<name> ID
@@ -72,6 +74,7 @@ OP: 	PRINT PRINTABLE {if(execute) printf("\n");};
 
 PRINTABLE:  EXP { if(execute) printf("%f", $1);}
 	   | STRING { if(execute) printf("%s", $1);}
+	   | SET { Node *res = find(start, $1); _print(res->setType);}
 	   | ARRID { if(execute) print_array($1, &start);}
 	   | PRINTABLE '_' EXP {if(execute) printf("%f", $3);} 
 	   | PRINTABLE '_' STRING {if(execute) printf("%s", $3);}
@@ -79,9 +82,13 @@ PRINTABLE:  EXP { if(execute) printf("%f", $1);}
 	   | GINSENG {if(execute) cup();};
 
 ASSIGNMENT: 
-	ID '=' EXP {if(execute) define(&start, $1, $3, NULL);}
-	|ARRID '=' ARRAY {if(execute) {define(&start, $1, 0.0, arrTemp); arrTemp = NULL;} }
-	|ARRID '[' EXP ']' '=' EXP {if(execute) setArrayItem(&start, $1, $3, $6);};
+	ID '=' EXP {if(execute) define(&start, $1, $3, NULL, NULL);}
+	|ARRID '=' ARRAY {if(execute) {define(&start, $1, 0.0, arrTemp, NULL); arrTemp = NULL;} }
+	|ARRID '[' EXP ']' '=' EXP {if(execute) setArrayItem(&start, $1, $3, $6);}
+	|SET '=' '{' {setTemp = _create();} SETLIST '}'{define(&start, $1, 0, NULL, setTemp); };;
+	
+SETLIST: NUMBER {_insert(setTemp, $1);}
+		|NUMBER ',' SETLIST {_insert(setTemp, $1);};
 EXP:    
 	 EXP '+' EXP {$$ = $1 + $3; }
 	| EXP '-' EXP {$$ = $1 - $3;}
@@ -99,10 +106,10 @@ EXP:
 
 ARRAY: '[' ELEM ']';
 
-ELEM :  ID {sprintf(tempLab, "%d", indexArr); Node *res = find(start, $1); if (res != NULL && res->array == NULL){ define(&arrTemp,tempLab, res->value, NULL); indexArr++; }  else yyerror("Syntax error: use of an undeclared/wrong type variable");}
-	| NUMBER {sprintf(tempLab, "%d", indexArr); define(&arrTemp,tempLab, $1, NULL); indexArr++;}
-	| ID {sprintf(tempLab, "%d", indexArr); Node *res = find(start, $1); if (res != NULL && res->array == NULL){ define(&arrTemp,tempLab, res->value, NULL); indexArr++; }  else yyerror("Syntax error: use of an undeclared/wrong type variable");} ',' ELEM 
-	| NUMBER {sprintf(tempLab, "%d", indexArr); define(&arrTemp,tempLab, $1, NULL); indexArr++;} ',' ELEM ;
+ELEM :  ID {sprintf(tempLab, "%d", indexArr); Node *res = find(start, $1); if (res != NULL && res->array == NULL){ define(&arrTemp,tempLab, res->value, NULL, NULL); indexArr++; }  else yyerror("Syntax error: use of an undeclared/wrong type variable");}
+	| NUMBER {sprintf(tempLab, "%d", indexArr); define(&arrTemp,tempLab, $1, NULL, NULL); indexArr++;}
+	| ID {sprintf(tempLab, "%d", indexArr); Node *res = find(start, $1); if (res != NULL && res->array == NULL){ define(&arrTemp,tempLab, res->value, NULL, NULL); indexArr++; }  else yyerror("Syntax error: use of an undeclared/wrong type variable");} ',' ELEM 
+	| NUMBER {sprintf(tempLab, "%d", indexArr); define(&arrTemp,tempLab, $1, NULL, NULL); indexArr++;} ',' ELEM ;
 
 
 IFSTAT: IF CONDITION THEN '{' S '}' { execute = ifTable->restore; pop(&ifTable); ifCount--;}
@@ -135,7 +142,7 @@ int main(int argc, char* argv[]) {
 		intro();
 	}
 		
-	
+	setTemp = _create();
 	yyparse();
 	return 0;
 	}	

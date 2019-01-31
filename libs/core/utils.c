@@ -25,7 +25,7 @@ bool nullcheck(void* p){
 
 	bool ret = false;
 	if(p == NULL){
-		printf("Null pointer detected! Exiting.\n");
+		printf("\nNull pointer detected! Exiting.\n");
 		exit(1);
 	}
 	return ret;

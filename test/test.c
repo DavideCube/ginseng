@@ -1,26 +1,12 @@
-#include <stdio.h>
+#include "../libs/data/set.h"
 
 
 int main(){
 
-	printf("	 )  (\n");
-	printf("     (   ) )\n");
-	printf("      ) ( (\n");
-	printf("    _______)_\n");
-	printf(" .-'---------|  \n");
-	printf("( C|/\\/\\/\\/\\/|\n");
-	printf(" '-./\\/\\/\\/\\/|\n");
-	printf("   '_________'\n");
-	printf("    '-------'\n");
-	printf("\n\n\n");
-	printf("	 )  (\n");
-	printf("     (   ) )\n");
-	printf("      ) ( (\n");
-	printf("    _______)_\n");
-	printf(" .-'---------|  \n");
-	printf("( C|/\\/\\/\\/\\/|\n");
-	printf(" '-./GINSENG/|\n");
-	printf("   |/\\/\\/\\/\\/|\n");
-	printf("   '_________'\n");
-	printf("    '-------'\n");
+	struct set_t* set = _create();
+	_insert(set, 1);
+	_insert(set, 2);
+	_print(set);
+
+
 }

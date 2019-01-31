@@ -116,11 +116,5 @@ bool _equals(struct set_t* set_a, struct set_t* set_b);
 
 /********************************************************************/
 
-//TODO
-struct set_t** _powerset(struct set_t* a);
-
-
-
-
 
 #endif

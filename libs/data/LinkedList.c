@@ -5,13 +5,14 @@
 #include "LinkedList.h"
 
 //We add a node in the head position of the list beginning with start
-void add(Node **start, char lab[], double val, Node *arr){
+void add(Node **start, char lab[], double val, Node *arr, struct set_t* set){
 	
 		Node *newNode;
 		newNode = malloc(sizeof(Node));
 	
 		newNode->value = val;
 		newNode->array = arr;
+		newNode->setType = set;
 		strcpy(newNode->label,lab);
 		newNode->next = (*start);
 	
@@ -48,7 +49,7 @@ Node* find(Node *start, char lab[]){
 
 //We would like to define a variable. If it is already present we modify it, 
 //otherwise we add it
-void define(Node **start, char lab[], double val, Node *arr){
+void define(Node **start, char lab[], double val, Node *arr, struct set_t* set){
 	
 	Node *res = find( (*start), lab);
 	
@@ -56,15 +57,17 @@ void define(Node **start, char lab[], double val, Node *arr){
 		//printf("Found with value %f\n", res->value);
 		res->value = val;
 		res->array = arr;
+		res->setType = set;
+		printf("Adding set");
 	 }else
-		append(start, lab, val, arr); //else add it*/
+		append(start, lab, val, arr, set); //else add it*/
 }
 
 //similar to add but addition is made at the end of the list
-void append(Node **start, char lab[], double val, Node *arr){
+void append(Node **start, char lab[], double val, Node *arr, struct set_t* set){
 
 	if((*start) == NULL){
-		add(start, lab, val, arr);
+		add(start, lab, val, arr, set);
 		return;
 	}
 
@@ -79,6 +82,7 @@ void append(Node **start, char lab[], double val, Node *arr){
 	
 		newNode->value = val;
 		newNode->array = arr;
+		newNode->setType = set;
 		strcpy(newNode->label,lab);
 
 		
@@ -195,12 +199,12 @@ void setArrayItem(Node **start, char lab[], int index, double value){
 
 	while(current < index){
 		sprintf(tempLab, "%d", current); 
-		append(mod, tempLab, 0.0, NULL);
+		append(mod, tempLab, 0.0, NULL, NULL);
 		current++;
 		
 	}
 	sprintf(tempLab, "%d", current);
-	append(mod, tempLab, value, NULL);
+	append(mod, tempLab, value, NULL, NULL);
 
 	}
 }

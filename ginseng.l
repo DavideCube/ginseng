@@ -20,11 +20,12 @@ char* stringResize(char* text);
 "else"			{return ELSE;}
 "=="			{return EQUAL;}
 "<="			{return LESSEQUAL;}
-"<"			{return LESS;}
+"<"				{return LESS;}
 ">="			{return GREATEREQUAL;}
-">"			{return GREATER;}
+">"				{return GREATER;}
 
-[a-zA-Z][a-zA-Z0-9_]*  {strcpy(yylval.name,yytext); return ID;} //it is a string, we copy it in the value
+[a-z][a-zA-Z0-9_]*  {strcpy(yylval.name,yytext); return ID;} //it is a string, we copy it in the value
+[A-Z][a-zA-Z0-9_]* 	   {strcpy(yylval.name,yytext); return SET;}
 \"[^\"]*\"	{yylval.strval = stringResize(yytext); return STRING;}
 [-+*/()\.%!=;^_\[\],\{\}]		{return yytext[0];}
 \<[a-zA-Z][a-zA-Z0-9_]*\> {yylval.strval = strdup(yytext); return ARRID;}
