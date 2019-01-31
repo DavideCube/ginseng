@@ -48,6 +48,7 @@ double exec;
 %token ID SET
 %token PRINT LENGTH IF THEN ELSE STATLIST
 %token EQUAL LESS GREATER LESSEQUAL GREATEREQUAL
+%token UNION DIFFERENCE INTERSECTION SUBSET SETEQUALS
 %token<strval> STRING ARRID
 %token GINSENG
 %type<value> NUMBER EXP
@@ -74,7 +75,7 @@ OP: 	PRINT PRINTABLE {if(execute) printf("\n");};
 
 PRINTABLE:  EXP { if(execute) printf("%f", $1);}
 	   | STRING { if(execute) printf("%s", $1);}
-	   | SET { Node *res = find(start, $1); if (res != NULL && res->array == NULL) _print(res->setType); }
+	   | SET { Node *res = find(start, $1); if (res != NULL && res->array == NULL) _print(res->setType); else yyerror("Syntax error: used of an undeclared set");}
 	   | ARRID { if(execute) print_array($1, &start);}
 	   | PRINTABLE '_' EXP {if(execute) printf("%f", $3);} 
 	   | PRINTABLE '_' STRING {if(execute) printf("%s", $3);}
@@ -85,8 +86,13 @@ ASSIGNMENT:
 	ID '=' EXP {if(execute) define(&start, $1, $3, NULL, NULL);}
 	|ARRID '=' ARRAY {if(execute) {define(&start, $1, 0.0, arrTemp, NULL); arrTemp = NULL;} }
 	|ARRID '[' EXP ']' '=' EXP {if(execute) setArrayItem(&start, $1, $3, $6);}
-	|SET '=' '{' {setTemp = _create();} SETLIST '}'{define(&start, $1, 0.0, NULL, setTemp); };;
-	
+	|SET '=' {setTemp = _create();} SET_EXPRESSION {define(&start, $1, 0.0, NULL, setTemp);};;
+
+SET_EXPRESSION: '{' SETLIST '}'
+				| SET UNION SET {Node *setOne = find(start, $1); Node *setTwo = find(start, $3); if(setOne != NULL && setTwo != NULL) setTemp = _union(setOne->setType, setTwo->setType); else yyerror("Syntax error: used of an undeclared set"); } 
+				| SET INTERSECTION SET {Node *setOne = find(start, $1); Node *setTwo = find(start, $3); if(setOne != NULL && setTwo != NULL) setTemp = _intersect(setOne->setType, setTwo->setType); else yyerror("Syntax error: used of an undeclared set");}
+				| SET DIFFERENCE SET {Node *setOne = find(start, $1); Node *setTwo = find(start, $3); if(setOne != NULL && setTwo != NULL) setTemp = _diff(setOne->setType, setTwo->setType); else yyerror("Syntax error: used of an undeclared set");};
+
 SETLIST: NUMBER {_insert(setTemp, $1);}
 		|NUMBER ',' SETLIST {_insert(setTemp, $1);};
 EXP:    
@@ -102,6 +108,8 @@ EXP:
 	| '-' NUMBER {$$ = -$2;}
 	|ARRID '[' EXP ']'{$$ = returnArrayItem( &start, $1, (int) $3); }
 	| LENGTH '(' ARRID ')' {$$ = arrayLength(&start, $3);}
+	| SUBSET '(' SET ',' SET ')' {Node *setOne = find(start, $3); Node *setTwo = find(start, $5); if(setOne != NULL && setTwo != NULL) $$ = _is_subset(setOne->setType, setTwo->setType); else yyerror("Syntax error: used of an undeclared set");}
+	| SETEQUALS '(' SET ',' SET ')' {Node *setOne = find(start, $3); Node *setTwo = find(start, $5); if(setOne != NULL && setTwo != NULL) $$ = _equals(setOne->setType, setTwo->setType); else yyerror("Syntax error: used of an undeclared set");}
 	| ID {Node *res = find(start, $1); if (res != NULL && res->array == NULL) $$ = res->value; else yyerror("Syntax error: use of an undeclared/wrong type variable");};
  
 ARRAY: '[' ELEM ']';

@@ -23,7 +23,11 @@ char* stringResize(char* text);
 "<"				{return LESS;}
 ">="			{return GREATEREQUAL;}
 ">"				{return GREATER;}
-
+"union"			{return UNION;}
+"intersection"  {return INTERSECTION;}
+"difference"	{return DIFFERENCE;}
+"is_subset"		{return SUBSET;}
+"is_equal"		{return SETEQUALS;}
 [a-z][a-zA-Z0-9_]*  {strcpy(yylval.name,yytext); return ID;} //it is a string, we copy it in the value
 [A-Z][a-zA-Z0-9_]* 	   {strcpy(yylval.name,yytext); return SET;}
 \"[^\"]*\"	{yylval.strval = stringResize(yytext); return STRING;}
