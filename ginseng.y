@@ -45,13 +45,13 @@ double exec;
 	
 
 %token NUMBER
-%token ID
+%token ID SET
 %token PRINT LENGTH IF THEN ELSE STATLIST
 %token EQUAL LESS GREATER LESSEQUAL GREATEREQUAL
-%token<strval> STRING ARRID SET
+%token<strval> STRING ARRID
 %token GINSENG
 %type<value> NUMBER EXP
-%type<name> ID
+%type<name> ID SET
 
 
 %right '=' '_'
@@ -74,7 +74,7 @@ OP: 	PRINT PRINTABLE {if(execute) printf("\n");};
 
 PRINTABLE:  EXP { if(execute) printf("%f", $1);}
 	   | STRING { if(execute) printf("%s", $1);}
-	   | SET { Node *res = find(start, $1); _print(res->setType);}
+	   | SET { Node *res = find(start, $1); if (res != NULL && res->array == NULL) _print(res->setType); }
 	   | ARRID { if(execute) print_array($1, &start);}
 	   | PRINTABLE '_' EXP {if(execute) printf("%f", $3);} 
 	   | PRINTABLE '_' STRING {if(execute) printf("%s", $3);}
@@ -85,7 +85,7 @@ ASSIGNMENT:
 	ID '=' EXP {if(execute) define(&start, $1, $3, NULL, NULL);}
 	|ARRID '=' ARRAY {if(execute) {define(&start, $1, 0.0, arrTemp, NULL); arrTemp = NULL;} }
 	|ARRID '[' EXP ']' '=' EXP {if(execute) setArrayItem(&start, $1, $3, $6);}
-	|SET '=' '{' {setTemp = _create();} SETLIST '}'{define(&start, $1, 0, NULL, setTemp); };;
+	|SET '=' '{' {setTemp = _create();} SETLIST '}'{define(&start, $1, 0.0, NULL, setTemp); };;
 	
 SETLIST: NUMBER {_insert(setTemp, $1);}
 		|NUMBER ',' SETLIST {_insert(setTemp, $1);};
@@ -103,7 +103,7 @@ EXP:
 	|ARRID '[' EXP ']'{$$ = returnArrayItem( &start, $1, (int) $3); }
 	| LENGTH '(' ARRID ')' {$$ = arrayLength(&start, $3);}
 	| ID {Node *res = find(start, $1); if (res != NULL && res->array == NULL) $$ = res->value; else yyerror("Syntax error: use of an undeclared/wrong type variable");};
-
+ 
 ARRAY: '[' ELEM ']';
 
 ELEM :  ID {sprintf(tempLab, "%d", indexArr); Node *res = find(start, $1); if (res != NULL && res->array == NULL){ define(&arrTemp,tempLab, res->value, NULL, NULL); indexArr++; }  else yyerror("Syntax error: use of an undeclared/wrong type variable");}
