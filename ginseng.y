@@ -22,6 +22,7 @@ int yywrap();
 Node *start = NULL;
 Node *arrTemp = NULL;
 struct set_t* setTemp = NULL;
+struct set_t* setTemp2 = NULL;
 Node *ifTable = NULL;
 int indexArr = 0;
 char tempLab[12];
@@ -47,8 +48,8 @@ double exec;
 %token NUMBER
 %token ID SET
 %token PRINT LENGTH IF THEN ELSE STATLIST
-%token EQUAL LESS GREATER LESSEQUAL GREATEREQUAL
-%token UNION DIFFERENCE INTERSECTION SUBSET SETEQUALS
+%token EQUAL NOTEQUAL LESS GREATER LESSEQUAL GREATEREQUAL
+%token UNION DIFFERENCE INTERSECTION SUBSET SETEQUALS CONTAINS
 %token<strval> STRING ARRID
 %token GINSENG
 %type<value> NUMBER EXP
@@ -57,7 +58,7 @@ double exec;
 
 %right '=' '_'
 %left "print"
-%left '+' '-'
+%left '+' '-' UNION INTERSECTION DIFFERENCE
 %left '*' '/' '^' '%' '!'
 
 %%
@@ -86,15 +87,27 @@ ASSIGNMENT:
 	ID '=' EXP {if(execute) define(&start, $1, $3, NULL, NULL);}
 	|ARRID '=' ARRAY {if(execute) {define(&start, $1, 0.0, arrTemp, NULL); arrTemp = NULL;} }
 	|ARRID '[' EXP ']' '=' EXP {if(execute) setArrayItem(&start, $1, $3, $6);}
-	|SET '=' {setTemp = _create();} SET_EXPRESSION {define(&start, $1, 0.0, NULL, setTemp);};;
+	|SET '=' {setTemp = _create(); setTemp2 = _create();} SET_EXPRESSION {define(&start, $1, 0.0, NULL, setTemp);};;
 
-SET_EXPRESSION: '{' SETLIST '}'
-				| SET UNION SET {Node *setOne = find(start, $1); Node *setTwo = find(start, $3); if(setOne != NULL && setTwo != NULL) setTemp = _union(setOne->setType, setTwo->setType); else yyerror("Syntax error: used of an undeclared set"); } 
-				| SET INTERSECTION SET {Node *setOne = find(start, $1); Node *setTwo = find(start, $3); if(setOne != NULL && setTwo != NULL) setTemp = _intersect(setOne->setType, setTwo->setType); else yyerror("Syntax error: used of an undeclared set");}
-				| SET DIFFERENCE SET {Node *setOne = find(start, $1); Node *setTwo = find(start, $3); if(setOne != NULL && setTwo != NULL) setTemp = _diff(setOne->setType, setTwo->setType); else yyerror("Syntax error: used of an undeclared set");};
+SET_EXPRESSION: '{' SETLIST '}' 
+				| UNION_EXP
+				| DIFF_EXP
+				| INT_EXP;
 
-SETLIST: NUMBER {_insert(setTemp, $1);}
-		|NUMBER ',' SETLIST {_insert(setTemp, $1);};
+UNION_EXP: SET {Node *setOne = find(start, $1); if(setOne != NULL) setTemp = setOne->setType; else yyerror("Syntax error: used of an undeclared set");}
+			| EXP {_insert(setTemp, $1);}
+			| UNION_EXP UNION EXP {_insert(setTemp, $3);};
+			| UNION_EXP UNION SET {Node *setOne = find(start, $3); if(setOne != NULL) setTemp = _union(setOne->setType, setTemp); else yyerror("Syntax error: used of an undeclared set");};
+
+INT_EXP : SET {Node *setOne = find(start, $1); if(setOne != NULL) setTemp = setOne->setType; else yyerror("Syntax error: used of an undeclared set");}
+			|INT_EXP INTERSECTION SET {Node *setOne = find(start, $3); if(setOne != NULL) setTemp = _intersect(setTemp, setOne->setType); else yyerror("Syntax error: used of an undeclared set");}
+
+DIFF_EXP: SET {printf("Temp contains now a set\n"); Node *setOne = find(start, $1); if(setOne != NULL) setTemp = setOne->setType; else yyerror("Syntax error: used of an undeclared set");}
+			| DIFF_EXP DIFFERENCE EXP {printf("Removing from temp %f\n", $3); _remove(setTemp, $3);};
+			| DIFF_EXP DIFFERENCE SET {Node *setOne = find(start, $3); if(setOne != NULL) setTemp = _diff(setTemp, setOne->setType); else yyerror("Syntax error: used of an undeclared set");};
+
+SETLIST: EXP {_insert(setTemp, $1);}
+		|EXP ',' SETLIST {_insert(setTemp, $1);};
 EXP:    
 	 EXP '+' EXP {$$ = $1 + $3; }
 	| EXP '-' EXP {$$ = $1 - $3;}
@@ -110,6 +123,7 @@ EXP:
 	| LENGTH '(' ARRID ')' {$$ = arrayLength(&start, $3);}
 	| SUBSET '(' SET ',' SET ')' {Node *setOne = find(start, $3); Node *setTwo = find(start, $5); if(setOne != NULL && setTwo != NULL) $$ = _is_subset(setOne->setType, setTwo->setType); else yyerror("Syntax error: used of an undeclared set");}
 	| SETEQUALS '(' SET ',' SET ')' {Node *setOne = find(start, $3); Node *setTwo = find(start, $5); if(setOne != NULL && setTwo != NULL) $$ = _equals(setOne->setType, setTwo->setType); else yyerror("Syntax error: used of an undeclared set");}
+	| CONTAINS '(' SET ',' EXP ')' {Node *setOne = find(start, $3); if(setOne != NULL) $$ = _contains(setOne->setType, $5); else yyerror("Syntax error: used of an undeclared set");}
 	| ID {Node *res = find(start, $1); if (res != NULL && res->array == NULL) $$ = res->value; else yyerror("Syntax error: use of an undeclared/wrong type variable");};
  
 ARRAY: '[' ELEM ']';
@@ -125,6 +139,7 @@ IFSTAT: IF CONDITION THEN '{' S '}' { execute = ifTable->restore; pop(&ifTable);
 
 
 CONDITION: EXP EQUAL EXP { restore = execute; if (execute) {execute = ($1 == $3? 1:0); elseVal = (execute==1? 0:1); } else{elseVal = 0;} ifCount++; sprintf(tempLab, "%d", ifCount); addIf(&ifTable, tempLab, elseVal, restore, NULL); }
+			| EXP NOTEQUAL EXP { restore = execute; if (execute) {execute = ($1 != $3? 1:0); elseVal = (execute==1? 0:1); } else{elseVal = 0;} ifCount++; sprintf(tempLab, "%d", ifCount); addIf(&ifTable, tempLab, elseVal, restore, NULL); }
 		   |EXP LESSEQUAL EXP {restore = execute; if (execute) {execute = ($1 <= $3? 1:0); elseVal = (execute==1? 0:1); } else{elseVal = 0;} ifCount++; sprintf(tempLab, "%d", ifCount); addIf(&ifTable, tempLab, elseVal, restore, NULL);}
 		   |EXP GREATEREQUAL EXP {restore = execute; if (execute) {execute = ($1 >= $3? 1:0); elseVal = (execute==1? 0:1); } else{elseVal = 0;} ifCount++; sprintf(tempLab, "%d", ifCount); addIf(&ifTable, tempLab, elseVal, restore, NULL);}
 		   |EXP LESS EXP {restore = execute; if (execute) {execute = ($1 < $3? 1:0); elseVal = (execute==1? 0:1); } else{elseVal = 0;} ifCount++; sprintf(tempLab, "%d", ifCount); addIf(&ifTable, tempLab, elseVal, restore, NULL);}
@@ -154,4 +169,3 @@ int main(int argc, char* argv[]) {
 	yyparse();
 	return 0;
 	}	
-

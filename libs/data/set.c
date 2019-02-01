@@ -91,7 +91,9 @@ bool _remove(struct set_t* set, double value){
 		struct elem_s* curr = set->head;
 		//value to delete is in the head
 		if(curr->value == value){
-			curr->next = NULL;
+			
+			//curr->next = NULL;
+			set->head = curr->next;
 			free(curr);
 			set->size--;
 			return true;
@@ -237,14 +239,7 @@ struct set_t* _intersect(struct set_t* set_a, struct set_t* set_b){
 
 	struct set_t* res = _create();
 
-	if(_empty(set_a)){
-		res = set_b;
-	}
-	else if(_empty(set_b)){
-		res = set_a;
-	}
-	else{
-
+	if(!_empty(set_a) && !_empty(set_b)){
 		struct elem_s* curr = set_a->head;
 		while(curr != NULL){
 			if(_contains(set_b, curr->value)){
