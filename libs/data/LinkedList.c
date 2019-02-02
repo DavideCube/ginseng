@@ -58,7 +58,7 @@ void define(Node **start, char lab[], double val, Node *arr, struct set_t* set){
 		res->value = val;
 		res->array = arr;
 		res->setType = set;
-		printf("Adding set");
+		//printf("Adding set");
 	 }else
 		append(start, lab, val, arr, set); //else add it*/
 }
