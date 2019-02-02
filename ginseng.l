@@ -18,6 +18,8 @@ char* stringResize(char* text);
 "if"			{return IF;}
 "then"			{return THEN;}
 "else"			{return ELSE;}
+"and"			{return AND;}
+"or"			{return OR;}
 "=="			{return EQUAL;}
 "!="			{return NOTEQUAL;}
 "<="			{return LESSEQUAL;}

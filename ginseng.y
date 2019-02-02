@@ -31,9 +31,10 @@ char tempLab[12];
 int execute = 1;
 int restore;
 int elseVal = 0;
-
 int ifCount = 0;
 double exec;
+int execTemp = 1;
+int compType = 0;
 %}
 
 
@@ -41,6 +42,7 @@ double exec;
 	double value;
 	char name[20];
 	char *strval;
+	int boolValue;
 	
 }
 	
@@ -48,11 +50,12 @@ double exec;
 %token NUMBER
 %token ID SET
 %token PRINT LENGTH IF THEN ELSE STATLIST
-%token EQUAL NOTEQUAL LESS GREATER LESSEQUAL GREATEREQUAL
+%token EQUAL NOTEQUAL LESS GREATER LESSEQUAL GREATEREQUAL AND OR
 %token UNION DIFFERENCE INTERSECTION SUBSET SETEQUALS CONTAINS
 %token<strval> STRING ARRID
 %token GINSENG
 %type<value> NUMBER EXP
+%type<boolValue> COMPARISON
 %type<name> ID SET
 
 
@@ -60,6 +63,7 @@ double exec;
 %left "print"
 %left '+' '-' UNION INTERSECTION DIFFERENCE
 %left '*' '/' '^' '%' '!'
+%left AND OR
 
 %%
 
@@ -139,12 +143,19 @@ IFSTAT: IF CONDITION THEN '{' S '}' { execute = ifTable->restore; pop(&ifTable);
 		|IF CONDITION THEN '{' S '}' {execute = (int) ifTable->value; }  ELSE '{' S '}' {execute = ifTable->restore; pop(&ifTable); ifCount--;};
 
 
-CONDITION: EXP EQUAL EXP { restore = execute; if (execute) {execute = ($1 == $3? 1:0); elseVal = (execute==1? 0:1); } else{elseVal = 0;} ifCount++; sprintf(tempLab, "%d", ifCount); addIf(&ifTable, tempLab, elseVal, restore, NULL); }
-			| EXP NOTEQUAL EXP { restore = execute; if (execute) {execute = ($1 != $3? 1:0); elseVal = (execute==1? 0:1); } else{elseVal = 0;} ifCount++; sprintf(tempLab, "%d", ifCount); addIf(&ifTable, tempLab, elseVal, restore, NULL); }
-		   |EXP LESSEQUAL EXP {restore = execute; if (execute) {execute = ($1 <= $3? 1:0); elseVal = (execute==1? 0:1); } else{elseVal = 0;} ifCount++; sprintf(tempLab, "%d", ifCount); addIf(&ifTable, tempLab, elseVal, restore, NULL);}
-		   |EXP GREATEREQUAL EXP {restore = execute; if (execute) {execute = ($1 >= $3? 1:0); elseVal = (execute==1? 0:1); } else{elseVal = 0;} ifCount++; sprintf(tempLab, "%d", ifCount); addIf(&ifTable, tempLab, elseVal, restore, NULL);}
-		   |EXP LESS EXP {restore = execute; if (execute) {execute = ($1 < $3? 1:0); elseVal = (execute==1? 0:1); } else{elseVal = 0;} ifCount++; sprintf(tempLab, "%d", ifCount); addIf(&ifTable, tempLab, elseVal, restore, NULL);}
-		   |EXP GREATER EXP {restore = execute; if (execute) {execute = ($1 > $3? 1:0); elseVal = (execute==1? 0:1); } else{elseVal = 0;} ifCount++; sprintf(tempLab, "%d", ifCount); addIf(&ifTable, tempLab, elseVal, restore, NULL);};
+CONDITION: COND_EXP { restore = execute; if (execute) {execute = execTemp; elseVal = (execute==1? 0:1); } else{elseVal = 0;} ifCount++; sprintf(tempLab, "%d", ifCount); addIf(&ifTable, tempLab, elseVal, restore, NULL); };
+
+COND_EXP: COMPARISON {execTemp = $1;}
+		  | COND_EXP AND COMPARISON {{if(execTemp == 1 && $3 == 1) execTemp = 1; else execTemp = 0;}}
+		  | COND_EXP OR COMPARISON  {{if(execTemp == 1 || $3 == 1) execTemp = 1; else execTemp = 0;}};
+
+
+COMPARISON : EXP EQUAL EXP {$$ = ($1 == $3?1:0);}
+			 | EXP NOTEQUAL EXP {$$ = ($1 != $3?1:0);}
+			 |EXP LESSEQUAL EXP {$$ = ($1 <= $3?1:0);}
+			 |EXP GREATEREQUAL EXP {$$ = ($1 >= $3?1:0);}
+			 |EXP LESS EXP {$$ = ($1 < $3?1:0);}
+			 |EXP GREATER EXP {$$ = ($1 > $3?1:0);};
 %%
 
 void yyerror(char *msg) {
