@@ -20,6 +20,7 @@ int yywrap();
 
 //Symbol table variable (cremo is now a contributor yeee)
 Node *start = NULL;
+Node *head = NULL;
 Node *arrTemp = NULL;
 struct set_t* setTemp = NULL;
 struct set_t* setTemp2 = NULL;
@@ -81,7 +82,7 @@ OP: 	PRINT PRINTABLE {if(execute) printf("\n");};
 PRINTABLE:  EXP { if(execute) printf("%f", $1);}
 	   | STRING { if(execute) printf("%s", $1);}
 	   | SET { if(execute) {Node *res = find(start, $1); if (res != NULL && res->array == NULL) _print(res->setType); else yyerror("Syntax error: used of an undeclared set"); } }
-	   | ARRID { if(execute) print_array($1, &start);}
+	   | ARRID { if(execute){ print_array($1, &start);} }
 	   | PRINTABLE '_' EXP {if(execute) printf("%f", $3);} 
 	   | PRINTABLE '_' STRING {if(execute) printf("%s", $3);}
 	   | PRINTABLE '_' ARRID {if(execute) print_array($3, &start);}
@@ -129,7 +130,7 @@ EXP:
 	| SUBSET '(' SET ',' SET ')' {Node *setOne = find(start, $3); Node *setTwo = find(start, $5); if(setOne != NULL && setTwo != NULL) $$ = _is_subset(setOne->setType, setTwo->setType); else yyerror("Syntax error: used of an undeclared set");}
 	| SETEQUALS '(' SET ',' SET ')' {Node *setOne = find(start, $3); Node *setTwo = find(start, $5); if(setOne != NULL && setTwo != NULL) $$ = _equals(setOne->setType, setTwo->setType); else yyerror("Syntax error: used of an undeclared set");}
 	| CONTAINS '(' SET ',' EXP ')' {Node *setOne = find(start, $3); if(setOne != NULL) $$ = _contains(setOne->setType, $5); else yyerror("Syntax error: used of an undeclared set");}
-	| ID {Node *res = find(start, $1); if (res != NULL && res->array == NULL) $$ = res->value; else yyerror("Syntax error: use of an undeclared/wrong type variable");};
+	| ID {Node *res = find(start, $1); if (res != NULL && res->array == NULL) $$ = res->value; else{  yyerror("Syntax error: use of an undeclared/wrong type variable"); } };
  
 ARRAY: '[' ELEM ']';
 

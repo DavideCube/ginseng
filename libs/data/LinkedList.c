@@ -107,13 +107,14 @@ void print_List(Node *start){
 Node ** findReferenceToArray(Node **start, char lab[]){
 
 	Node **arr = NULL;
-	while( (*start) != NULL){
+	Node *list = (*start);
+	while( list != NULL){
 		
-		if( strcmp((*start)->label, lab) == 0 && (*start)->array != NULL){
-			arr =  &((*start)->array);
+		if( strcmp(list->label, lab) == 0 && list->array != NULL){
+			arr =  &(list->array);
 			break;
 		}
-		(*start) = (*start)->next;
+		list = list->next;
 	}
 
 	return arr;
