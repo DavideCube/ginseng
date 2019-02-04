@@ -50,7 +50,7 @@ int compType = 0;
 
 %token NUMBER
 %token ID SET
-%token PRINT LENGTH IF THEN ELSE STATLIST
+%token PRINT LENGTH IF THEN ELSE STATLIST ABS
 %token EQUAL NOTEQUAL LESS GREATER LESSEQUAL GREATEREQUAL AND OR
 %token UNION DIFFERENCE INTERSECTION SUBSET SETEQUALS CONTAINS
 %token<strval> STRING ARRID
@@ -130,6 +130,7 @@ EXP:
 	| SUBSET '(' SET ',' SET ')' {Node *setOne = find(start, $3); Node *setTwo = find(start, $5); if(setOne != NULL && setTwo != NULL) $$ = _is_subset(setOne->setType, setTwo->setType); else yyerror("Syntax error: used of an undeclared set");}
 	| SETEQUALS '(' SET ',' SET ')' {Node *setOne = find(start, $3); Node *setTwo = find(start, $5); if(setOne != NULL && setTwo != NULL) $$ = _equals(setOne->setType, setTwo->setType); else yyerror("Syntax error: used of an undeclared set");}
 	| CONTAINS '(' SET ',' EXP ')' {Node *setOne = find(start, $3); if(setOne != NULL) $$ = _contains(setOne->setType, $5); else yyerror("Syntax error: used of an undeclared set");}
+	| ABS '(' EXP ')' {$$ = fabs($3);};
 	| ID {Node *res = find(start, $1); if (res != NULL && res->array == NULL) $$ = res->value; else{  yyerror("Syntax error: use of an undeclared/wrong type variable"); } };
  
 ARRAY: '[' ELEM ']';

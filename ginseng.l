@@ -32,6 +32,7 @@ char* stringResize(char* text);
 "is_subset"		{return SUBSET;}
 "is_equal"		{return SETEQUALS;}
 "contains"		{return CONTAINS;}
+"abs"			{return ABS;}
 [a-z][a-zA-Z0-9_]*  {strcpy(yylval.name,yytext); return ID;} //it is a string, we copy it in the value
 [A-Z][a-zA-Z0-9_]* 	   {strcpy(yylval.name,yytext); return SET;}
 \"[^\"]*\"	{yylval.strval = stringResize(yytext); return STRING;}
