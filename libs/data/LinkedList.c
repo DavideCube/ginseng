@@ -95,7 +95,7 @@ void append(Node **start, char lab[], double val, Node *arr, struct set_t* set){
 void print_List(Node *start){
 	
 	while(start != NULL){
-		printf("Current value: %f\n", start->value);
+		printf("Current value: %.3f\n", start->value);
 		start = start->next;
 	}
 
@@ -134,7 +134,7 @@ void print_array(char lab[], Node **start){
 		int first = 1;
 		while(arr != NULL){
 			printf(first? "" : " , ");
-			printf("%.2f", arr->value);
+			printf("%.3f", arr->value);
 			arr = arr->next;
 			first = 0;
 		}

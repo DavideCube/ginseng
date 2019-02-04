@@ -72,7 +72,6 @@ P: S '.' {return 0;};
 
 S: 	|ASSIGNMENT
 	|OP
-	|IFSTAT
 	| ASSIGNMENT ';' S
 	| OP ';' S
 	| IFSTAT S;
@@ -80,11 +79,11 @@ S: 	|ASSIGNMENT
 
 OP: 	PRINT PRINTABLE {if(execute) printf("\n");};
 
-PRINTABLE:  EXP { if(execute) printf("%f", $1);}
+PRINTABLE:  EXP { if(execute) printf("%.3f", $1);}
 	   | STRING { if(execute) printf("%s", $1);}
 	   | SET { if(execute) {Node *res = find(start, $1); if (res != NULL && res->array == NULL) _print(res->setType); else yyerror("Syntax error: used of an undeclared set"); } }
 	   | ARRID { if(execute){ print_array($1, &start);} }
-	   | PRINTABLE '_' EXP {if(execute) printf("%f", $3);} 
+	   | PRINTABLE '_' EXP {if(execute) printf("%.3f", $3);} 
 	   | PRINTABLE '_' STRING {if(execute) printf("%s", $3);}
 	   | PRINTABLE '_' ARRID {if(execute) print_array($3, &start);}
 	   | PRINTABLE '_' SET {if(execute) {Node *res = find(start, $3); if (res != NULL && res->array == NULL) _print(res->setType); else yyerror("Syntax error: used of an undeclared set");} }
@@ -128,6 +127,7 @@ EXP:
 	| '-' NUMBER {$$ = -$2;}
 	|ARRID '[' EXP ']'{$$ = returnArrayItem( &start, $1, (int) $3); }
 	| LENGTH '(' ARRID ')' {$$ = arrayLength(&start, $3);}
+	| LENGTH '(' SET ')' {Node *setOne = find(start, $3); if(setOne != NULL) $$ = setOne->setType->size; else yyerror("Syntax error: used of an undeclared set");}
 	| SUBSET '(' SET ',' SET ')' {Node *setOne = find(start, $3); Node *setTwo = find(start, $5); if(setOne != NULL && setTwo != NULL) $$ = _is_subset(setOne->setType, setTwo->setType); else yyerror("Syntax error: used of an undeclared set");}
 	| SETEQUALS '(' SET ',' SET ')' {Node *setOne = find(start, $3); Node *setTwo = find(start, $5); if(setOne != NULL && setTwo != NULL) $$ = _equals(setOne->setType, setTwo->setType); else yyerror("Syntax error: used of an undeclared set");}
 	| CONTAINS '(' SET ',' EXP ')' {Node *setOne = find(start, $3); if(setOne != NULL) $$ = _contains(setOne->setType, $5); else yyerror("Syntax error: used of an undeclared set");}
