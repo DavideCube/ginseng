@@ -72,6 +72,7 @@ P: S '.' {return 0;};
 
 S: 	|ASSIGNMENT
 	|OP
+	|IFSTAT
 	| ASSIGNMENT ';' S
 	| OP ';' S
 	| IFSTAT S;
@@ -108,8 +109,8 @@ UNION_EXP: SET {Node *setOne = find(start, $1); if(setOne != NULL) setTemp = set
 INT_EXP : SET {Node *setOne = find(start, $1); if(setOne != NULL) setTemp = setOne->setType; else yyerror("Syntax error: used of an undeclared set");}
 			|INT_EXP INTERSECTION SET {Node *setOne = find(start, $3); if(setOne != NULL) setTemp = _intersect(setTemp, setOne->setType); else yyerror("Syntax error: used of an undeclared set");}
 
-DIFF_EXP: SET {printf("Temp contains now a set\n"); Node *setOne = find(start, $1); if(setOne != NULL) setTemp = setOne->setType; else yyerror("Syntax error: used of an undeclared set");}
-			| DIFF_EXP DIFFERENCE EXP {printf("Removing from temp %f\n", $3); _remove(setTemp, $3);};
+DIFF_EXP: SET {Node *setOne = find(start, $1); if(setOne != NULL) setTemp = setOne->setType; else yyerror("Syntax error: used of an undeclared set");}
+			| DIFF_EXP DIFFERENCE EXP {_remove(setTemp, $3);};
 			| DIFF_EXP DIFFERENCE SET {Node *setOne = find(start, $3); if(setOne != NULL) setTemp = _diff(setTemp, setOne->setType); else yyerror("Syntax error: used of an undeclared set");};
 
 SETLIST: EXP {_insert(setTemp, $1);}
