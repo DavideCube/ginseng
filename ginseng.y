@@ -79,11 +79,11 @@ S: 	|ASSIGNMENT
 
 OP: 	PRINT PRINTABLE {if(execute) printf("\n");};
 
-PRINTABLE:  EXP { if(execute) printf("%f", $1);}
+PRINTABLE:  EXP { if(execute) printf("%.3f", $1);}
 	   | STRING { if(execute) printf("%s", $1);}
 	   | SET { if(execute) {Node *res = find(start, $1); if (res != NULL && res->array == NULL) _print(res->setType); else yyerror("Syntax error: used of an undeclared set"); } }
 	   | ARRID { if(execute){ print_array($1, &start);} }
-	   | PRINTABLE '_' EXP {if(execute) printf("%f", $3);} 
+	   | PRINTABLE '_' EXP {if(execute) printf("%.3f", $3);} 
 	   | PRINTABLE '_' STRING {if(execute) printf("%s", $3);}
 	   | PRINTABLE '_' ARRID {if(execute) print_array($3, &start);}
 	   | PRINTABLE '_' SET {if(execute) {Node *res = find(start, $3); if (res != NULL && res->array == NULL) _print(res->setType); else yyerror("Syntax error: used of an undeclared set");} }
