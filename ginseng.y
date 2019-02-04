@@ -72,7 +72,6 @@ P: S '.' {return 0;};
 
 S: 	|ASSIGNMENT
 	|OP
-	|IFSTAT
 	| ASSIGNMENT ';' S
 	| OP ';' S
 	| IFSTAT S;
@@ -128,6 +127,7 @@ EXP:
 	| '-' NUMBER {$$ = -$2;}
 	|ARRID '[' EXP ']'{$$ = returnArrayItem( &start, $1, (int) $3); }
 	| LENGTH '(' ARRID ')' {$$ = arrayLength(&start, $3);}
+	| LENGTH '(' SET ')' {Node *setOne = find(start, $3); if(setOne != NULL) $$ = setOne->setType->size; else yyerror("Syntax error: used of an undeclared set");}
 	| SUBSET '(' SET ',' SET ')' {Node *setOne = find(start, $3); Node *setTwo = find(start, $5); if(setOne != NULL && setTwo != NULL) $$ = _is_subset(setOne->setType, setTwo->setType); else yyerror("Syntax error: used of an undeclared set");}
 	| SETEQUALS '(' SET ',' SET ')' {Node *setOne = find(start, $3); Node *setTwo = find(start, $5); if(setOne != NULL && setTwo != NULL) $$ = _equals(setOne->setType, setTwo->setType); else yyerror("Syntax error: used of an undeclared set");}
 	| CONTAINS '(' SET ',' EXP ')' {Node *setOne = find(start, $3); if(setOne != NULL) $$ = _contains(setOne->setType, $5); else yyerror("Syntax error: used of an undeclared set");}
