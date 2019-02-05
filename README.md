@@ -1,5 +1,5 @@
 # :coffee: ginseng
 :coffee: ginseng Programming Language
 
-This Lex and Yacc definitions are part of a Ginseng compiler. Ginseng is a tiny custom programming language developed by us as part of a compiler programming project for the Free University of Bolzano.
-The .l and .y files hold the source code for generating a lexer and a parser for our compiler.
+Ginseng is a small, strongly typed programming language designed by us and oriented to arithmetical calculations. It provides the developer with a collection of embedded operators and data structures representing abstractions of mathematical objects, such as unbounded sets and sequences (arrays).
+The compiler we developed for this language is called ginseng1.1.0, implemented with Lex and Yacc.
